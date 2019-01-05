@@ -3,11 +3,9 @@ import {
   applyMiddleware,
   combineReducers
 } from "redux";
-
+import thunk from "redux-thunk";
 import logger from "redux-logger";
-
 import createHistory from "history/createBrowserHistory";
-
 import user, { UserState } from "./user";
 
 const history = createHistory();
@@ -15,7 +13,7 @@ const history = createHistory();
 export default function createStore() {
   const store = reduxCreateStore(
     combineReducers({ user }),
-    applyMiddleware(logger)
+    applyMiddleware(thunk, logger)
   );
   return { store, history };
 }
