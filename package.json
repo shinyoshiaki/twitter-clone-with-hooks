@@ -54,14 +54,14 @@
     "@types/react-router-dom": "^4.3.1",
     "@types/redux": "^3.6.0",
     "@types/redux-logger": "^3.0.6",
-    "@types/redux-thunk": "^2.1.0",
     "@types/semantic-ui": "^2.2.6",
     "@types/storybook__addon-actions": "^3.4.1",
     "@types/storybook__addon-links": "^3.3.3",
     "@types/storybook__addon-notes": "^4.0.0",
     "@types/storybook__addon-storyshots": "^3.4.4",
     "@types/storybook__react": "^4.0.0",
-    "awesome-typescript-loader": "^5.2.1",
-    "babel-loader": "8.0.4"
+    "@types/redux-thunk": "^2.1.0",
+    "babel-loader": "8.0.4",
+    "awesome-typescript-loader": "^5.2.1"
   }
 }
