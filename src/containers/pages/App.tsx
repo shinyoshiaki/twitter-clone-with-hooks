@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { ReduxState } from "../../modules/createStore";
-import { Header, Container, Segment, Input, Button } from "semantic-ui-react";
+import { Header, Container } from "semantic-ui-react";
 import SignUp from "../organisms/signup";
 import LoginOrg from "../organisms/login";
 import ModAccoutOrg from "../organisms/setting/modAccount";

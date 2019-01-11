@@ -1,4 +1,4 @@
-import { Action, Dispatch, AnyAction } from "redux";
+import { Action, Dispatch } from "redux";
 import axios from "axios";
 
 const req = axios.create({ baseURL: "http://localhost:1323" });
@@ -22,19 +22,45 @@ enum ActionName {
   LOGIN_FAIL = "LOGIN_FAIL",
   SIGNUP = "SIGNUP",
   SIGNUP_SUCCESS = "SIGNUP_SUCCESS",
-  SIGNUP_FAIL = "SIGNUP_FAIL"
+  SIGNUP_FAIL = "SIGNUP_FAIL",
+  UPDATE = "UPDATE",
+  UPDATE_SUCCESS = "UPDATE_SUCCESS",
+  UPDATE_FAIL = "UPDATE_FAIL"
 }
 
-interface SignUpAction extends Action {
+type Actions =
+  | SignUpSuccess
+  | LoginSuccess
+  | UpdateSuccess
+  | {
+      type:
+        | ActionName.SIGNUP
+        | ActionName.SIGNUP_FAIL
+        | ActionName.LOGIN
+        | ActionName.LOGIN_FAIL
+        | ActionName.UPDATE
+        | ActionName.UPDATE_FAIL;
+    };
+
+interface SignUpSuccess extends Action {
   type: ActionName.SIGNUP_SUCCESS;
-  name: string;
-  id: string;
+  payload: { name: string; id: string };
+}
+
+interface LoginSuccess extends Action {
+  type: ActionName.LOGIN_SUCCESS;
+  payload: { name: string; id: string; session: string };
+}
+
+interface UpdateSuccess extends Action {
+  type: ActionName.UPDATE_SUCCESS;
+  payload: { name: string; id: string };
 }
 
 export const signUpMod = async (
   name: string,
   password: string,
-  dispatch: Dispatch<SignUpAction | Action>
+  dispatch: Dispatch<SignUpSuccess | Action>
 ) => {
   dispatch({ type: ActionName.SIGNUP });
   const res = await req
@@ -45,20 +71,17 @@ export const signUpMod = async (
     return;
   }
   const data: { name: string; id: string } = res.data;
-  dispatch({ type: ActionName.SIGNUP_SUCCESS, name: data.name, id: data.id });
+  const success: Dispatch<SignUpSuccess> = dispatch;
+  success({
+    type: ActionName.SIGNUP_SUCCESS,
+    payload: { name: data.name, id: data.id }
+  });
 };
-
-interface LoginAction extends Action {
-  type: ActionName.LOGIN_SUCCESS;
-  name: string;
-  id: string;
-  session: string;
-}
 
 export const loginMod = async (
   name: string,
   password: string,
-  dispatch: Dispatch<LoginAction | Action>
+  dispatch: Dispatch<LoginSuccess | Action>
 ) => {
   dispatch({ type: ActionName.LOGIN });
   const res = await req
@@ -69,63 +92,74 @@ export const loginMod = async (
     return;
   }
   const data: { name: string; id: string; session: string } = res.data;
-  dispatch({
+  const success: Dispatch<LoginSuccess> = dispatch;
+  success({
     type: ActionName.LOGIN_SUCCESS,
-    name: data.name,
-    id: data.id,
-    session: data.session
+    payload: { name: data.name, id: data.id, session: data.session }
   });
 };
 
-type Actions =
-  | SignUpAction
-  | LoginAction
-  | {
-      type:
-        | ActionName.SIGNUP
-        | ActionName.SIGNUP_FAIL
-        | ActionName.LOGIN
-        | ActionName.LOGIN_FAIL;
-    };
+export const updateMod = async (
+  name: string,
+  password: string,
+  session: string,
+  dispatch: Dispatch<UpdateSuccess | Action>
+) => {
+  dispatch({ type: ActionName.UPDATE });
+  const res = await req
+    .post("/users/update", { name, password, session })
+    .catch(console.log);
+  if (!res) {
+    dispatch({ type: ActionName.UPDATE_FAIL });
+    return;
+  }
+  const data: { name: string; id: string } = res.data;
+  const success: Dispatch<UpdateSuccess> = dispatch;
+  success({
+    type: ActionName.UPDATE_SUCCESS,
+    payload: { name: data.name, id: data.id }
+  });
+};
 
-export default function reducer(prev = initialUserState, action: Actions) {
+export default function reducer(state = initialUserState, action: Actions) {
   switch (action.type) {
     case ActionName.SIGNUP: {
-      const next: UserState = { ...prev, ui: { ...prev.ui, signup: true } };
-      return next;
+      return { ...state, ui: { ...state.ui, signup: true } } as UserState;
     }
     case ActionName.SIGNUP_FAIL: {
-      const next: UserState = { ...prev, ui: { ...prev.ui, signup: false } };
-      return next;
+      return { ...state, ui: { ...state.ui, signup: false } } as UserState;
     }
     case ActionName.SIGNUP_SUCCESS: {
-      const next: UserState = {
-        ...prev,
-        name: action.name,
-        id: action.id,
-        ui: { ...prev.ui, signup: false }
-      };
-      return next;
+      return {
+        ...state,
+        name: action.payload.name,
+        id: action.payload.id,
+        ui: { ...state.ui, signup: false }
+      } as UserState;
     }
     case ActionName.LOGIN: {
-      const next: UserState = { ...prev, ui: { ...prev.ui, login: true } };
-      return next;
+      return { ...state, ui: { ...state.ui, login: true } } as UserState;
     }
     case ActionName.LOGIN_FAIL: {
-      const next: UserState = { ...prev, ui: { ...prev.ui, login: false } };
-      return next;
+      return { ...state, ui: { ...state.ui, login: false } } as UserState;
     }
     case ActionName.LOGIN_SUCCESS: {
-      const next: UserState = {
-        ...prev,
-        name: action.name,
-        id: action.id,
-        session: action.session,
-        ui: { ...prev.ui, login: false }
-      };
-      return next;
+      return {
+        ...state,
+        name: action.payload.name,
+        id: action.payload.id,
+        session: action.payload.session,
+        ui: { ...state.ui, login: false }
+      } as UserState;
+    }
+    case ActionName.UPDATE_SUCCESS: {
+      return {
+        ...state,
+        name: action.payload.name,
+        id: action.payload.id
+      } as UserState;
     }
     default:
-      return prev;
+      return state;
   }
 }
