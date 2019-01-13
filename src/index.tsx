@@ -8,6 +8,10 @@ import { Provider } from "react-redux";
 import { HashRouter, Route } from "react-router-dom";
 import Signup from "./containers/pages/Signup";
 import Login from "./containers/pages/Login";
+import Home from "./containers/pages/Home";
+import Explore from "./containers/pages/Explore";
+import Notifications from "./containers/pages/Notifications";
+import Messages from "./containers/pages/Messages";
 
 const data = createStore();
 
@@ -18,6 +22,10 @@ ReactDOM.render(
         <Route exact path="/" component={App} />
         <Route path="/signup" component={Signup} />
         <Route path="/login" component={Login} />
+        <Route path="/home" component={Home} />
+        <Route path="/explore" component={Explore} />
+        <Route path="/notifications" component={Notifications} />
+        <Route path="/messages" component={Messages} />
       </div>
     </HashRouter>
   </Provider>,

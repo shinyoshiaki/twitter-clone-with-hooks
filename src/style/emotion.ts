@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 
-export const Center = styled.div({
+export const Middle = styled.div({
   width: "100%",
   height: "100vh",
   display: "flex",
@@ -8,3 +8,10 @@ export const Center = styled.div({
   flexDirection: "column",
   alignItems: "center"
 });
+
+export const Center = styled.div((props: { row?: boolean }) => ({
+  width: "100%",
+  display: "flex",
+  justifyContent: "center",
+  flexDirection: props.row ? "row" : "column"
+}));

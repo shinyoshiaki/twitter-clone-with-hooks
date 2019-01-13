@@ -14,7 +14,6 @@ const SignUpOrg: FunctionComponent<{ dispatch: Dispatch; history: any }> = ({
   const signUp = async (e: any) => {
     const res = await signUpMod(e.name, e.pass, dispatch).catch(console.log);
     if (res) {
-      console.log("history", typeof history, { history });
       history.push("home");
     }
   };

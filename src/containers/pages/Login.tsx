@@ -2,13 +2,13 @@ import React, { FunctionComponent } from "react";
 import { connect } from "react-redux";
 import { ReduxState } from "../../modules/createStore";
 import LoginOrg from "../organisms/login";
-import { Center } from "../../style/emotion";
+import { Middle } from "../../style/emotion";
 
 const Login: FunctionComponent<{ history: any }> = ({ history }) => {
   return (
-    <Center>
+    <Middle>
       <LoginOrg history={history} />
-    </Center>
+    </Middle>
   );
 };
 
