@@ -1,9 +1,15 @@
 import * as React from "react";
 
-import { Segment } from "semantic-ui-react";
 import HeaderMol from "../../../../components/molecules/header";
+import { connect } from "react-redux";
+import { ReduxState } from "../../../../modules/createStore";
+import { UserState } from "../../../../modules/user";
 
-export default class LayoutOrg extends React.Component<{ history: any }, {}> {
+interface Props extends UserState {
+  history: any;
+}
+
+class LayoutOrg extends React.Component<Props, {}> {
   handleClick = (page: string) => {
     this.props.history.push(page);
   };
@@ -27,6 +33,7 @@ export default class LayoutOrg extends React.Component<{ history: any }, {}> {
               { Messages: "messages" }
             ]}
             onClick={this.handleClick}
+            name={this.props.name}
           />
         </div>
         <div>
@@ -39,3 +46,7 @@ export default class LayoutOrg extends React.Component<{ history: any }, {}> {
     );
   }
 }
+
+export default connect((state: ReduxState) => Object.assign({}, state.user))(
+  LayoutOrg
+);

@@ -2,7 +2,6 @@ import React, { FunctionComponent } from "react";
 import { connect } from "react-redux";
 import FormMol from "../../../components/molecules/form";
 import { Container, Segment, Header } from "semantic-ui-react";
-import { req } from "../../../utill/axios";
 import { ReduxState } from "../../../modules/createStore";
 import { updateMod, UserState } from "../../../modules/user";
 import { Dispatch } from "redux";

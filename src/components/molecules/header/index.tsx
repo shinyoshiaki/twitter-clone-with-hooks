@@ -5,18 +5,21 @@ import { Center } from "../../../style/emotion";
 interface HeaderProps {
   style?: React.CSSProperties;
   items: { [key: string]: string }[];
-  defaultTab?: string;
   onClick: (name: string) => void;
+  name?: string;
 }
 
 export default class HeaderMol extends React.Component<HeaderProps, {}> {
   render() {
     const active = location.href.split("/").slice(-1)[0];
-    const { onClick, style, items } = this.props;
+    const { onClick, style, items, name } = this.props;
     return (
       <div style={{ ...style }}>
         <div>
           <Menu pointing secondary>
+            <Menu.Menu position="left">
+              <Menu.Item name={name} onClick={() => {}} />
+            </Menu.Menu>
             <Center row>
               {items.map(item => {
                 const name = Object.keys(item)[0];
