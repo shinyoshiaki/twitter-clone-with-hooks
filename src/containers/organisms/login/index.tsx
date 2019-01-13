@@ -7,9 +7,16 @@ import { loginMod } from "../../../modules/user";
 import FormMol from "../../../components/molecules/form";
 import { Container, Segment, Header } from "semantic-ui-react";
 
-const LoginOrg: FunctionComponent<{ dispatch: Dispatch }> = ({ dispatch }) => {
-  const submit = (e: any) => {
-    loginMod(e.name, e.pass, dispatch);
+const LoginOrg: FunctionComponent<{ dispatch: Dispatch; history: any }> = ({
+  dispatch,
+  history
+}) => {
+  const submit = async (e: any) => {
+    const res = await loginMod(e.name, e.pass, dispatch);
+    if (res) {
+      console.log("hisotry", typeof history);
+      history.push("home");
+    }
   };
 
   return (

@@ -7,9 +7,16 @@ import { signUpMod } from "../../../modules/user";
 import FormMol from "../../../components/molecules/form";
 import { Container, Segment, Header } from "semantic-ui-react";
 
-const SignUpOrg: FunctionComponent<{ dispatch: Dispatch }> = ({ dispatch }) => {
-  const signUp = (e: any) => {
-    signUpMod(e.name, e.pass, dispatch);
+const SignUpOrg: FunctionComponent<{ dispatch: Dispatch; history: any }> = ({
+  dispatch,
+  history
+}) => {
+  const signUp = async (e: any) => {
+    const res = await signUpMod(e.name, e.pass, dispatch).catch(console.log);
+    if (res) {
+      console.log("history", typeof history, { history });
+      history.push("home");
+    }
   };
 
   return (

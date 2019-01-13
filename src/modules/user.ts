@@ -7,129 +7,114 @@ export interface UserState {
   name?: string;
   id?: string;
   session?: string;
-  ui: { signup: boolean; login: boolean };
+  ui: { signup: boolean; login: boolean; update: boolean };
 }
 
 const initialUserState: UserState = {
   name: undefined,
   id: undefined,
-  ui: { signup: false, login: false }
+  ui: { signup: false, login: false, update: false }
 };
 
+const START = "_start",
+  FAIL = "_fail";
+
 enum ActionName {
-  LOGIN = "LOGIN",
-  LOGIN_SUCCESS = "LOGIN_SUCCESS",
-  LOGIN_FAIL = "LOGIN_FAIL",
   SIGNUP = "SIGNUP",
-  SIGNUP_SUCCESS = "SIGNUP_SUCCESS",
-  SIGNUP_FAIL = "SIGNUP_FAIL",
-  UPDATE = "UPDATE",
-  UPDATE_SUCCESS = "UPDATE_SUCCESS",
-  UPDATE_FAIL = "UPDATE_FAIL"
+  LOGIN = "LOGIN",
+  UPDATE = "UPDATE"
 }
 
-type Actions =
-  | SignUpSuccess
-  | LoginSuccess
-  | UpdateSuccess
-  | {
-      type:
-        | ActionName.SIGNUP
-        | ActionName.SIGNUP_FAIL
-        | ActionName.LOGIN
-        | ActionName.LOGIN_FAIL
-        | ActionName.UPDATE
-        | ActionName.UPDATE_FAIL;
-    };
+type Actions = SignUpSuccess | LoginSuccess | UpdateSuccess;
 
 interface SignUpSuccess extends Action {
-  type: ActionName.SIGNUP_SUCCESS;
+  type: ActionName.SIGNUP;
   payload: { name: string; id: string };
 }
 
-interface LoginSuccess extends Action {
-  type: ActionName.LOGIN_SUCCESS;
-  payload: { name: string; id: string; session: string };
-}
-
 interface UpdateSuccess extends Action {
-  type: ActionName.UPDATE_SUCCESS;
+  type: ActionName.UPDATE;
   payload: { name: string; id: string };
 }
 
 export const signUpMod = async (
   name: string,
   password: string,
-  dispatch: Dispatch<SignUpSuccess | Action>
+  dispatch: Dispatch<any>
 ) => {
-  dispatch({ type: ActionName.SIGNUP });
-  const res = await req
-    .post("/users/signup", { name, password })
-    .catch(console.log);
-  if (!res) {
-    dispatch({ type: ActionName.SIGNUP_FAIL });
-    return;
-  }
-  const data: { name: string; id: string } = res.data;
-  const success: Dispatch<SignUpSuccess> = dispatch;
-  success({
-    type: ActionName.SIGNUP_SUCCESS,
-    payload: { name: data.name, id: data.id }
+  return new Promise<boolean>(async (resolve, reject) => {
+    await api(
+      { dir: "/users/signup", data: { name, password } },
+      ActionName.SIGNUP,
+      dispatch
+    ).catch(() => reject("fail"));
+    await loginMod(name, password, dispatch).catch(() => reject("fail"));
+    resolve(true);
   });
 };
+
+interface LoginSuccess extends Action {
+  type: ActionName.LOGIN;
+  payload: { name: string; id: string; session: string };
+}
 
 export const loginMod = async (
   name: string,
   password: string,
-  dispatch: Dispatch<LoginSuccess | Action>
+  dispatch: Dispatch<LoginSuccess>
 ) => {
-  dispatch({ type: ActionName.LOGIN });
-  const res = await req
-    .post("/users/login", { name, password })
-    .catch(console.log);
-  if (!res) {
-    dispatch({ type: ActionName.LOGIN_FAIL });
-    return;
-  }
-  const data: { name: string; id: string; session: string } = res.data;
-  const success: Dispatch<LoginSuccess> = dispatch;
-  success({
-    type: ActionName.LOGIN_SUCCESS,
-    payload: { name: data.name, id: data.id, session: data.session }
+  return new Promise<boolean>(async (resolve, reject) => {
+    await api(
+      { dir: "/users/login", data: { name, password } },
+      ActionName.LOGIN,
+      dispatch
+    ).catch(reject);
+    resolve(true);
   });
 };
 
 export const updateMod = async (
+  code: string,
   name: string,
   password: string,
   session: string,
-  dispatch: Dispatch<UpdateSuccess | Action>
+  dispatch: Dispatch<UpdateSuccess>
 ) => {
-  dispatch({ type: ActionName.UPDATE });
-  const res = await req
-    .post("/users/update", { name, password, session })
-    .catch(console.log);
-  if (!res) {
-    dispatch({ type: ActionName.UPDATE_FAIL });
-    return;
-  }
-  const data: { name: string; id: string } = res.data;
-  const success: Dispatch<UpdateSuccess> = dispatch;
-  success({
-    type: ActionName.UPDATE_SUCCESS,
-    payload: { name: data.name, id: data.id }
+  await api(
+    { dir: "/users/update", data: { code, name, password, session } },
+    ActionName.UPDATE,
+    dispatch
+  );
+};
+
+const api = async (
+  request: { dir: string; data: object },
+  type: string,
+  dispatch: Dispatch<any>
+) => {
+  return new Promise<boolean>(async (resolve, reject) => {
+    dispatch({ type: type + "_start" });
+    console.log(request.data);
+    const res = await req.post(request.dir, request.data).catch(console.log);
+    if (!res) {
+      dispatch({ type: type + "_fail" });
+      reject("fail");
+    } else {
+      dispatch({ type, payload: { ...res.data } });
+      resolve(true);
+    }
   });
 };
 
 export default function reducer(state = initialUserState, action: Actions) {
   switch (action.type) {
-    case ActionName.SIGNUP: {
+    case ActionName.SIGNUP + START: {
       return { ...state, ui: { ...state.ui, signup: true } } as UserState;
     }
-    case ActionName.SIGNUP_FAIL: {
+    case ActionName.SIGNUP + FAIL: {
       return { ...state, ui: { ...state.ui, signup: false } } as UserState;
     }
-    case ActionName.SIGNUP_SUCCESS: {
+    case ActionName.SIGNUP: {
       return {
         ...state,
         name: action.payload.name,
@@ -137,13 +122,13 @@ export default function reducer(state = initialUserState, action: Actions) {
         ui: { ...state.ui, signup: false }
       } as UserState;
     }
-    case ActionName.LOGIN: {
+    case ActionName.LOGIN + START: {
       return { ...state, ui: { ...state.ui, login: true } } as UserState;
     }
-    case ActionName.LOGIN_FAIL: {
+    case ActionName.LOGIN + FAIL: {
       return { ...state, ui: { ...state.ui, login: false } } as UserState;
     }
-    case ActionName.LOGIN_SUCCESS: {
+    case ActionName.LOGIN: {
       return {
         ...state,
         name: action.payload.name,
@@ -152,7 +137,13 @@ export default function reducer(state = initialUserState, action: Actions) {
         ui: { ...state.ui, login: false }
       } as UserState;
     }
-    case ActionName.UPDATE_SUCCESS: {
+    case ActionName.UPDATE + START: {
+      return { ...state, ui: { ...state.ui, update: true } } as UserState;
+    }
+    case ActionName.UPDATE + FAIL: {
+      return { ...state, ui: { ...state.ui, update: false } } as UserState;
+    }
+    case ActionName.UPDATE: {
       return {
         ...state,
         name: action.payload.name,
