@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from "react";
 import { connect } from "react-redux";
-import FormMol from "../../../components/molecules/form";
+import FormMol from "../../../components/molecules/form/index";
 import { Container, Segment, Header } from "semantic-ui-react";
 import { ReduxState } from "../../../modules/createStore";
 import { updateMod, UserState } from "../../../modules/user";

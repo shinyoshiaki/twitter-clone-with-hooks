@@ -12,6 +12,7 @@ import Home from "./containers/pages/Home";
 import Explore from "./containers/pages/Explore";
 import Notifications from "./containers/pages/Notifications";
 import Messages from "./containers/pages/Messages";
+import Settings from "./containers/pages/Settings";
 
 const data = createStore();
 
@@ -26,6 +27,7 @@ ReactDOM.render(
         <Route path="/explore" component={Explore} />
         <Route path="/notifications" component={Notifications} />
         <Route path="/messages" component={Messages} />
+        <Route path="/settings" component={Settings} />
       </div>
     </HashRouter>
   </Provider>,
