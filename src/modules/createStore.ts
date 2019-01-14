@@ -7,12 +7,13 @@ import thunk from "redux-thunk";
 import logger from "redux-logger";
 import createHistory from "history/createBrowserHistory";
 import user, { UserState } from "./user";
+import tweet, { TweetState } from "./tweet";
 
 const history = createHistory();
 
 export default function createStore() {
   const store = reduxCreateStore(
-    combineReducers({ user }),
+    combineReducers({ user, tweet }),
     applyMiddleware(thunk, logger)
   );
   return { store, history };
@@ -20,4 +21,5 @@ export default function createStore() {
 
 export interface ReduxState {
   user: UserState;
+  tweet: TweetState;
 }

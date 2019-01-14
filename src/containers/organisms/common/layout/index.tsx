@@ -20,10 +20,11 @@ class LayoutOrg extends React.Component<Props, {}> {
     this.props.history.push(page);
   };
 
-  handleTweet = async (tweet: ITweet) => {
+  handleTweet = async (text: string) => {
     const { id, session, dispatch } = this.props;
     if (id && session) {
-      await postTweet(id, session, tweet, dispatch).catch(console.log);
+      const code = id;
+      await postTweet({ code, session, text }, dispatch).catch(console.log);
     }
   };
 

@@ -14,13 +14,13 @@ export const apiAction = async (
   return new Promise<boolean>(async (resolve, reject) => {
     dispatch({ type: type + START });
     console.log(request.data);
-    const res = await req.post(request.dir, request.data).catch(console.log);
+    const res = await req.post(request.dir, request.data).catch(e => {
+      dispatch({ type: type + FAIL });
+      reject("fail" + e.response.data.state);
+    });
     if (res) {
       dispatch({ type, payload: { ...res.data } });
       resolve(true);
-    } else {
-      dispatch({ type: type + FAIL });
-      reject("fail");
     }
   });
 };

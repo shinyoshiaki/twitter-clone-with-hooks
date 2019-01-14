@@ -2,12 +2,12 @@ import { Action, Dispatch } from "redux";
 import { ITweet } from "../const/index";
 import { apiAction } from "../utill/api";
 
-export interface UserState {
+export interface TweetState {
   timeline: ITweet[];
   ui: { post: boolean };
 }
 
-const initialUserState: UserState = {
+const initialTweetState: TweetState = {
   timeline: [],
   ui: { post: false }
 };
@@ -23,18 +23,22 @@ type Actions = Post;
 
 interface Post extends Action {
   type: ActionName.POST;
-  payload: { tweet: ITweet };
+  payload: ITweet;
+}
+
+interface PostTweet {
+  session: string;
+  code: string;
+  text: string;
 }
 
 export const postTweet = async (
-  code: string,
-  session: string,
-  tweet: ITweet,
+  postTweet: PostTweet,
   dispatch: Dispatch<any>
 ) => {
   return new Promise<boolean>(async (resolve, reject) => {
     await apiAction(
-      { dir: "/timeline/post", data: { code, session, tweet } },
+      { dir: "/tweet/post", data: { ...postTweet } },
       ActionName.POST,
       dispatch
     ).catch(() => reject("fail"));
@@ -42,20 +46,20 @@ export const postTweet = async (
   });
 };
 
-export default function reducer(state = initialUserState, action: Actions) {
+export default function reducer(state = initialTweetState, action: Actions) {
   switch (action.type) {
     case ActionName.POST + START: {
-      return { ...state, ui: { ...state.ui, post: true } } as UserState;
+      return { ...state, ui: { ...state.ui, post: true } } as TweetState;
     }
     case ActionName.POST + FAIL: {
-      return { ...state, ui: { ...state.ui, post: false } } as UserState;
+      return { ...state, ui: { ...state.ui, post: false } } as TweetState;
     }
     case ActionName.POST: {
       return {
         ...state,
-        timeline: state.timeline.concat(action.payload.tweet),
+        timeline: state.timeline.concat(action.payload),
         ui: { ...state.ui, post: false }
-      } as UserState;
+      } as TweetState;
     }
     default:
       return state;

@@ -12,6 +12,7 @@ export const makeITweetMock = (
   return Object.assign(
     {},
     {
+      number: 0,
       name: "this is mock string",
       code: "this is mock string",
       time: "this is mock string",
@@ -23,6 +24,12 @@ export const makeITweetMock = (
 
 storiesOf("atoms", module).add("tweet", () => (
   <Component
-    tweet={{ name: "name", text: "text", time: "time", code: "code" }}
+    tweet={{
+      name: "name",
+      text: "text",
+      time: "time",
+      code: "code",
+      number: 0
+    }}
   />
 ));

@@ -5,7 +5,7 @@ import { Input, Button, Segment, TextArea, Form } from "semantic-ui-react";
 export interface Props {
   name?: string;
   code?: string;
-  submit: (tweet: ITweet) => void;
+  submit: (text: string) => void;
 }
 
 export default class TweetFormMol extends React.Component<
@@ -39,13 +39,7 @@ export default class TweetFormMol extends React.Component<
             <Button
               onClick={() => {
                 if (name && code) {
-                  const tweet: ITweet = {
-                    name,
-                    code,
-                    time: Date.now().toString(),
-                    text: this.state.text
-                  };
-                  submit(tweet);
+                  submit(this.state.text);
                 }
                 this.setState({ text: "" });
               }}
